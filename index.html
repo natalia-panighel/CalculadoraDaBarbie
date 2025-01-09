@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -24,7 +25,7 @@
             background-repeat: no-repeat;
             background-position: center;
             font-family: Arial, sans-serif;
-            
+
         }
 
         .container-box {
@@ -104,14 +105,14 @@
         .btn-cookie:hover {
             background-color: #ff85c1;
         }
-        
+
         /* Ajustes responsivos */
         @media (max-width: 576px) {
 
             body{
                  background-image: url('https://w0.peakpx.com/wallpaper/262/322/HD-wallpaper-barbie-birtay-barbie-with-pink-bg-barbie-pink-bg.jpg');
             }
-            
+
             .container-box {
                 padding: 20px;
             }
@@ -227,72 +228,7 @@
     <script>
         const atividades = [];
 
-        function adicionarAtividade() {
-            const categoria = document.getElementById('categoria').value;
-            const carga = parseInt(document.getElementById('carga').value);
-
-            if (!carga || carga <= 0) {
-                alert('Por favor, insira uma carga horária válida.');
-                return;
-            }
-
-            const totalAtual = atividades.reduce((acc, atividade) =>
-                atividade.categoria === categoria ? acc + atividade.carga : acc, 0);
-
-            const cargaFinal = Math.min(95, totalAtual + carga);
-
-            if (cargaFinal > totalAtual) {
-                atividades.push({ categoria, carga: cargaFinal - totalAtual });
-            } else {
-                alert(`A carga horária máxima de 95 horas já foi atingida para a categoria ${categoria}.`);
-            }
-
-            atualizarResumo();
-        }
-
-        function atualizarResumo() {
-            let resumo = '';
-            const totalPorCategoria = {
-                ensino: 0,
-                pesquisa: 0,
-                extensao: 0,
-                cultural: 0
-            };
-
-            let totalGeral = 0;
-
-            atividades.forEach(atividade => {
-                totalPorCategoria[atividade.categoria] += atividade.carga;
-                totalGeral += atividade.carga;
-            });
-
-            resumo += `<p>Total Geral: <strong>${totalGeral}</strong> horas</p>`;
-            resumo += '<ul>';
-            Object.keys(totalPorCategoria).forEach(cat => {
-                const categoriaNome = cat.charAt(0).toUpperCase() + cat.slice(1);
-                const totalCategoria = totalPorCategoria[cat];
-
-                resumo += `<li>${categoriaNome}: ${totalCategoria} horas`;
-
-                if (totalCategoria < 20) {
-                    resumo += ' <span class="text-danger">(Faltam '
-                        + (20 - totalCategoria) + ' horas para o mínimo.)</span>';
-                }
-                resumo += '</li>';
-            });
-            resumo += '</ul>';
-
-            if (totalGeral >= 135 && Object.values(totalPorCategoria).every(cat => cat >= 20)) {
-                resumo += '<p class="text-success">🎉 Parabéns! Você atingiu a carga horária necessária. 💃</p>';
-            } else {
-                resumo += `<p class="text-danger">💔 Você ainda precisa de ${
-                    Math.max(135 - totalGeral, ...Object.values(totalPorCategoria).map(cat => (cat < 20 ? 20 - cat : 0)))
-                } horas no total ou em categorias específicas.</p>`;
-            }
-
-            document.getElementById('resultado').innerHTML = resumo;
-        }
-
+       
         function calcularACEE() {
             const oacee = parseInt(document.getElementById('oacee').value) || 0;
             const unipampa = parseInt(document.getElementById('unipampa').value) || 0;
@@ -321,6 +257,60 @@
         document.getElementById('btn-entendi').addEventListener('click', () => {
             const banner = document.getElementById('cookie-banner');
             banner.style.display = 'none';
+        });
+
+        // Carregar informações armazenadas ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            const atividadesSalvas = localStorage.getItem('atividades');
+            if (atividadesSalvas) {
+                atividades.push(...JSON.parse(atividadesSalvas));
+                atualizarResumo();
+            }
+
+            const oaceeSalvo = localStorage.getItem('oacee');
+            const unipampaSalvo = localStorage.getItem('unipampa');
+
+            if (oaceeSalvo) document.getElementById('oacee').value = oaceeSalvo;
+            if (unipampaSalvo) document.getElementById('unipampa').value = unipampaSalvo;
+        });
+
+        // Salvar atividades no localStorage
+        function salvarAtividades() {
+            localStorage.setItem('atividades', JSON.stringify(atividades));
+        }
+
+        // Atualizar resumo e salvar as atividades
+        function adicionarAtividade() {
+            const categoria = document.getElementById('categoria').value;
+            const carga = parseInt(document.getElementById('carga').value);
+
+            if (!carga || carga <= 0) {
+                alert('Por favor, insira uma carga horária válida.');
+                return;
+            }
+
+            const totalAtual = atividades.reduce((acc, atividade) =>
+                atividade.categoria === categoria ? acc + atividade.carga : acc, 0);
+
+            const cargaFinal = Math.min(95, totalAtual + carga);
+
+            if (cargaFinal > totalAtual) {
+                atividades.push({ categoria, carga: cargaFinal - totalAtual });
+            } else {
+                alert(`A carga horária máxima de 95 horas já foi atingida para a categoria ${categoria}.`);
+            }
+
+            atualizarResumo();
+            salvarAtividades();
+        }
+
+        // Salvar valores de ACEE no localStorage ao modificar os campos
+        document.getElementById('oacee').addEventListener('input', () => {
+            localStorage.setItem('oacee', document.getElementById('oacee').value);
+        });
+
+        document.getElementById('unipampa').addEventListener('input', () => {
+            localStorage.setItem('unipampa', document.getElementById('unipampa').value);
         });
     </script>
 
