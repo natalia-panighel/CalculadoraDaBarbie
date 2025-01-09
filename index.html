@@ -22,7 +22,7 @@
             background-repeat: no-repeat;
             background-position: center;
             font-family: Arial, sans-serif;
-            
+
         }
         .container-box {
             background: rgba(255, 255, 255, 0.9);
@@ -91,13 +91,35 @@
         .btn-cookie:hover {
             background-color: #ff85c1;
         }
+
+        .btn-inline {
+            display: inline-block; /* Garante que fiquem lado a lado */
+            margin-right: 5px; /* Espaçamento horizontal entre os botões */
+            margin-top: 5px; /* Espaçamento superior */
+            padding: 5px 10px; /* Melhora a área de clique */
+            text-align: center;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            color: #fff;
+        }
         
         /* Ajustes responsivos */
         @media (max-width: 576px) {
             body{
                  background-image: url('https://w0.peakpx.com/wallpaper/262/322/HD-wallpaper-barbie-birtay-barbie-with-pink-bg-barbie-pink-bg.jpg');
             }
-            
+
             .container-box {
                 padding: 20px;
             }
@@ -170,6 +192,12 @@
             <label for="carga">Carga Horária (em horas)</label>
             <input type="number" id="carga" class="form-control mb-3" min="1" required>
             <button type="button" class="btn btn-custom w-100" onclick="adicionarAtividade()">Adicionar Atividade</button>
+
+            <div class="mt-3">
+                <button type="button" class="btn btn-danger btn-inline" onclick="limparACG()">Limpar Tudo</button>
+                    <button type="button" class="btn btn-danger btn-inline" onclick="limparUltimaAtividade()">Limpar Última</button>
+            </div>
+
         </form>
         <div id="resultado" class="result mt-3">Nenhuma atividade adicionada ainda. 💔</div>
         <!-- Calculadora ACEE -->
@@ -180,6 +208,12 @@
             <label for="unipampa">Horas de UNIPAMPA Cidadã</label>
             <input type="number" id="unipampa" class="form-control mb-3" min="0" value="0">
             <button type="button" class="btn btn-custom w-100" onclick="calcularACEE()">Calcular ACEE</button>
+            
+            <div class="mt-3">
+                <button type="button" class="btn btn-danger btn-inline" onclick="limparACEE()">Limpar Tudo</button>
+                <button type="button" class="btn btn-danger btn-inline" onclick="limparUltimaACEE()">Limpar Última</button>
+            </div>
+
         </form>
         <div id="resultado-acee" class="result mt-3">Nenhuma hora de ACEE adicionada ainda. 💔</div>
     </div>
@@ -189,38 +223,55 @@
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        const atividades = [];
+        // Variáveis para armazenar dados
+        let atividades = JSON.parse(localStorage.getItem('atividades')) || [];
+        let aceeData = JSON.parse(localStorage.getItem('aceeData')) || { oacee: 0, unipampa: 0 };
+        let aceeHistorico = []; // Histórico das alterações realizadas na calculadora ACEE
+
+        // Atualizar resumo ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            atualizarResumo();
+            atualizarResumoACEE();
+        });
+
+        // Função para adicionar uma atividade
         function adicionarAtividade() {
             const categoria = document.getElementById('categoria').value;
             const carga = parseInt(document.getElementById('carga').value);
+
             if (!carga || carga <= 0) {
                 alert('Por favor, insira uma carga horária válida.');
                 return;
             }
-            const totalAtual = atividades.reduce((acc, atividade) =>
-                atividade.categoria === categoria ? acc + atividade.carga : acc, 0);
+
+            const totalAtual = atividades.reduce(
+                (acc, atividade) => (atividade.categoria === categoria ? acc + atividade.carga : acc),
+                0
+            );
             const cargaFinal = Math.min(95, totalAtual + carga);
+
             if (cargaFinal > totalAtual) {
                 atividades.push({ categoria, carga: cargaFinal - totalAtual });
+                localStorage.setItem('atividades', JSON.stringify(atividades)); // Salvar no Local Storage
             } else {
                 alert(`A carga horária máxima de 95 horas já foi atingida para a categoria ${categoria}.`);
             }
             atualizarResumo();
         }
+
+        // Função para atualizar o resumo geral de atividades
         function atualizarResumo() {
             let resumo = '';
-            const totalPorCategoria = {
-                ensino: 0,
-                pesquisa: 0,
-                extensao: 0,
-                cultural: 0
-            };
+            const totalPorCategoria = { ensino: 0, pesquisa: 0, extensao: 0, cultural: 0 };
             let totalGeral = 0;
+
             atividades.forEach(atividade => {
                 totalPorCategoria[atividade.categoria] += atividade.carga;
                 totalGeral += atividade.carga;
             });
+
             resumo += `<p>Total Geral: <strong>${totalGeral}</strong> horas</p>`;
             resumo += '<ul>';
             Object.keys(totalPorCategoria).forEach(cat => {
@@ -228,12 +279,12 @@
                 const totalCategoria = totalPorCategoria[cat];
                 resumo += `<li>${categoriaNome}: ${totalCategoria} horas`;
                 if (totalCategoria < 20) {
-                    resumo += ' <span class="text-danger">(Faltam '
-                        + (20 - totalCategoria) + ' horas para o mínimo.)</span>';
+                    resumo += ` <span class="text-danger">(Faltam ${20 - totalCategoria} horas para o mínimo.)</span>`;
                 }
                 resumo += '</li>';
             });
             resumo += '</ul>';
+
             if (totalGeral >= 135 && Object.values(totalPorCategoria).every(cat => cat >= 20)) {
                 resumo += '<p class="text-success">🎉 Parabéns! Você atingiu a carga horária necessária. 💃</p>';
             } else {
@@ -241,15 +292,43 @@
                     Math.max(135 - totalGeral, ...Object.values(totalPorCategoria).map(cat => (cat < 20 ? 20 - cat : 0)))
                 } horas no total ou em categorias específicas.</p>`;
             }
+
             document.getElementById('resultado').innerHTML = resumo;
         }
+
+        // Função para calcular ACEE
         function calcularACEE() {
+            // Salvar o estado atual no histórico antes de alterar
+            aceeHistorico.push({ ...aceeData });
+
+            // Pega os valores inseridos
             const oacee = parseInt(document.getElementById('oacee').value) || 0;
             const unipampa = parseInt(document.getElementById('unipampa').value) || 0;
+
+            // Soma as horas ao invés de substituir
+            aceeData.oacee += oacee;
+            aceeData.unipampa += unipampa;
+
+            // Atualiza os dados no Local Storage
+            localStorage.setItem('aceeData', JSON.stringify(aceeData));
+
+            // Atualiza o resumo da ACEE
+            atualizarResumoACEE();
+
+            // Limpa os campos de entrada após o cálculo
+            document.getElementById('oacee').value = "";
+            document.getElementById('unipampa').value = "";
+        }
+
+        // Função para atualizar o resumo da ACEE
+        function atualizarResumoACEE() {
+            const { oacee, unipampa } = aceeData;
             const minOacee = 60;
             const minUnipampa = 65;
+
             let resultado = `<p>Total OACEE: ${oacee} horas</p>`;
             resultado += `<p>Total UNIPAMPA Cidadã: ${unipampa} horas</p>`;
+
             if (oacee >= minOacee && unipampa >= minUnipampa) {
                 resultado += '<p class="text-success">🎉 Parabéns! Você atingiu os requisitos de ACEE.</p>';
             } else {
@@ -260,9 +339,52 @@
                     resultado += `<p class="text-danger">💔 Faltam ${minUnipampa - unipampa} horas para UNIPAMPA Cidadã.</p>`;
                 }
             }
+
             document.getElementById('resultado-acee').innerHTML = resultado;
         }
-        // Função para esconder o cookie-banner ao clicar no botão "Entendi"
+
+        // Função para limpar as atividades gerais
+        function limparACG() {
+            if (confirm('Tem certeza de que deseja limpar todas as atividades?')) {
+                atividades = [];
+                localStorage.removeItem('atividades'); // Remover do Local Storage
+                atualizarResumo();
+            }
+        }
+
+        // Função para limpar os dados de ACEE
+        function limparACEE() {
+            if (confirm('Tem certeza de que deseja limpar os dados de ACEE?')) {
+                aceeData = { oacee: 0, unipampa: 0 };
+                localStorage.removeItem('aceeData'); // Remover do Local Storage
+                atualizarResumoACEE();
+            }
+        }
+
+        // Função para limpar a última alteração feita em ACEE
+        function limparUltimaACEE() {
+            if (aceeHistorico.length > 0) {
+                const ultimoEstado = aceeHistorico.pop();
+                aceeData = ultimoEstado;
+                localStorage.setItem('aceeData', JSON.stringify(aceeData));
+                atualizarResumoACEE();
+            } else {
+                alert("Não há informações anteriores para restaurar.");
+            }
+        }
+
+        // Função para limpar a última atividade adicionada
+        function limparUltimaAtividade() {
+            if (atividades.length > 0) {
+                atividades.pop();
+                localStorage.setItem('atividades', JSON.stringify(atividades));
+                atualizarResumo();
+            } else {
+                alert("Não há atividades para remover.");
+            }
+        }
+
+        // Esconder o banner de cookies
         document.getElementById('btn-entendi').addEventListener('click', () => {
             const banner = document.getElementById('cookie-banner');
             banner.style.display = 'none';
