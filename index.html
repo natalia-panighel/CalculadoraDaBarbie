@@ -437,6 +437,41 @@
                 }
             }
 
+            function limparACG() {
+                if (confirm("Tem certeza que deseja apagar TUDO?")) {
+
+                    atividades = [];
+                    localStorage.removeItem("atividades");
+
+                    atualizarResumo();    
+
+                    // força exibir a aba certa após limpar
+                    document.getElementById("aba-acg").style.display = "block";
+                    document.getElementById("aba-pb").style.display = "none";
+                    document.getElementById("pb4-container").style.display = "none";
+
+                    // mensagem padrão
+                    document.getElementById("resultado").innerHTML =
+                        "Nenhuma atividade adicionada ainda. 💔";
+                }
+            }
+            function limparUltimaAtividade() {
+                if (atividades.length === 0) {
+                    alert("Nenhuma atividade para remover.");
+                    return;
+                }
+
+                atividades.pop();
+                localStorage.setItem("atividades", JSON.stringify(atividades));
+
+                atualizarResumo();
+
+                document.getElementById("aba-acg").style.display = "block";
+                document.getElementById("aba-pb").style.display = "none";
+                document.getElementById("pb4-container").style.display = "none";
+            }
+
+
             /* ------------------------------------
                TROCA ENTRE ABAS
             --------------------------------------*/
