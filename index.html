@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora da Barbie</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Lobster+Two:ital,wght@0,700;1,700&family=Playwrite+IN&family=Playwrite+IS:wght@100..400&display=swap" rel="stylesheet">
+
     <style>
-        /* Adicionado estilo da Calculadora Barbie */
         body {
             margin: 0;
             min-height: 100vh;
@@ -22,373 +24,515 @@
             background-repeat: no-repeat;
             background-position: center;
             font-family: Arial, sans-serif;
-
         }
         .container-box {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 90%;
+            max-width: 520px;   /* Aumentado para caber os 3 botões */
+            width: 95%;         /* Dá mais espaço sem estourar no mobile */
         }
-        h1 {
-            font-family: "Lobster", serif;
-            color: #ff69b4;
-            text-align: center;
-        }
-        h4 {
-            color: #ff69b4;
-            text-align: center;
-        }
-        label {
-            color: #ff69b4;
-            font-weight: bold;
-        }
-        .btn-custom {
-            background-color: #ff69b4;
-            border-color: #ff69b4;
-            color: #fff;
-            font-weight: bold;
-        }
-        .btn-custom:hover {
-            background-color: #ff85c1;
-            border-color: #ff85c1;
-        }
-        .result {
-            background: #fff0f6;
-            border-left: 6px solid #ff69b4;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 10px;
-        }
-        .cookie-banner {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-top: 2px solid #ff69b4;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .cookie-banner p {
-            margin: 0;
-            color: #333;
-            font-size: 14px;
-        }
-        .btn-cookie {
-            background-color: #ff69b4;
-            border: none;
-            color: #fff;
-            font-size: 14px;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .btn-cookie:hover {
-            background-color: #ff85c1;
-        }
+        h1 { font-family: "Lobster", serif; color: #ff69b4; text-align: center; }
+        h4 { color: #ff69b4; text-align: center; }
+        label { color: #ff69b4; font-weight: bold; }
+        .btn-custom { background-color: #ff69b4; border-color: #ff69b4; color: #fff; font-weight: bold; }
+        .btn-custom:hover { background-color: #ff85c1; border-color: #ff85c1; }
+        .result { background: #fff0f6; border-left: 6px solid #ff69b4; padding: 15px; margin-top: 20px; border-radius: 10px; }
+        .btn-inline { display: inline-block; margin-right: 5px; margin-top: 5px; padding: 5px 10px; font-weight: bold; border-radius: 5px; }
+        .btn-danger { background-color: #dc3545; color: #fff; border: none; }
+        .btn-danger:hover { background-color: #c82333; }
 
-        .btn-inline {
-            display: inline-block; /* Garante que fiquem lado a lado */
-            margin-right: 5px; /* Espaçamento horizontal entre os botões */
-            margin-top: 5px; /* Espaçamento superior */
-            padding: 5px 10px; /* Melhora a área de clique */
-            text-align: center;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-            color: #fff;
-        }
-        
-        /* Ajustes responsivos */
         @media (max-width: 576px) {
-            body{
-                 background-image: url('https://w0.peakpx.com/wallpaper/262/322/HD-wallpaper-barbie-birtay-barbie-with-pink-bg-barbie-pink-bg.jpg');
+            body {
+                background-image: url('https://i.pinimg.com/1200x/2b/29/1d/2b291d6701a3f3fcf91fc96e41d9a20d.jpg');
+            }
+            .container-box { padding: 20px; }
+            h1 { font-size: 1.5rem; }
+            label { font-size: 0.9rem; }
+            .result { font-size: 0.8rem; }
+        }
+
+        .pb-result-pass { color: green; font-weight: bold; opacity: 0; transition: opacity 0.8s ease-in; }
+        .pb-result-fail { color: red; font-weight: bold; opacity: 0; transition: opacity 0.8s ease-in; }
+        .fade-in { opacity: 1 !important; }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+        .tab-buttons .btn-custom {
+            min-width: 150px;
+            padding: 10px 20px;
+        }
+
+        /* Ajuste especial para celular */
+        @media (max-width: 576px) {
+
+            .tab-buttons {
+                flex-direction: column;     /* Ficam um embaixo do outro */
+                gap: 10px;                  /* Espaço entre eles */
+                width: 100%;
+            }
+
+            .tab-buttons .btn-custom {
+                width: 100%;                /* Cada botão ocupa toda a largura */
+                min-width: unset;
             }
 
             .container-box {
+                max-width: 100% !important; /* Garante ajuste perfeito no mobile */
                 padding: 20px;
             }
-            h1 {
-                font-size: 1.5rem;
-            }
-            h4 {
-                font-size: 1.2rem;
-            }
-            label {
-                font-size: 0.9rem;
-            }
-            .result {
-                font-size: 0.8rem;
-            }
-            .cookie-banner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .cookie-banner p {
-                margin-bottom: 10px;
-            }
         }
+        
     </style>
 </head>
+
 <body>
+
+    <!-- CONTAINER PRINCIPAL -->
     <div class="container-box">
+
+        <!-- BOTÕES DE ABA -->
+        <div class="tab-buttons">
+            <button class="btn btn-custom" onclick="mostrarACG()">ACG / ACEE</button>
+            <button class="btn btn-custom" onclick="mostrarPB()">PB I • II • III</button>
+            <button class="btn btn-custom" onclick="mostrarPB4()">PB IV</button>
+        </div>
+
         <h1>Calculadora da Barbie 💕</h1>
-        <!-- Botão de ajuda -->
-        <button type="button" class="btn btn-custom w-100 mb-3" data-bs-toggle="modal" data-bs-target="#modalAjuda">
-            Ajuda 💡
-        </button>
-        <!-- Modal de ajuda -->
-        <div class="modal fade" id="modalAjuda" tabindex="-1" aria-labelledby="modalAjudaLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalAjudaLabel">Como funciona a calculadora?</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>Calculadora ACG</h6>
-                        <p>
-                            Insira a categoria da atividade realizada (ensino, pesquisa, extensão ou cultural) e a carga horária correspondente. Clique no botão "Adicionar Atividade" para registrar a atividade na lista. O resumo de atividades será exibido abaixo. Lembre que certificados usados nas ACEEs não poderão ser usados na categoria de extensão.
-                        </p>
-                        <p> Para mais informações sobre ACG e acesso a tabela com horas de cada atividade, entre no link:</p>
-                        <p><a href="https://drive.google.com/file/d/1vXkzYVqtScsodw8vZyRj9454xKxJeNi7/view?usp=sharing">Doc ACG</a></p>
-                        <h6>Calculadora ACEE</h6>
-                        <p>
-                            Informe o total de horas obtidas nas categorias "OACEE" e "UNIPAMPA Cidadã". Clique no botão "Calcular ACEE" para verificar se você atingiu os requisitos mínimos: 60 horas para OACEE e 65 horas para UNIPAMPA Cidadã. Lembre que certificados usados nas ACGs de extensão não poderão ser usados aqui.
-                        </p>
-                        <p><strong>Dica:</strong> Atividades como participação em eventos como ouvinte devem ter suas horas divididas por 2 antes de serem inseridas.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Entendi!</button>
+
+        <!-- ABA ACG -->
+        <div id="aba-acg">
+            <!-- Botão de ajuda -->
+                <button type="button" class="btn btn-custom w-100 mb-3" 
+                    data-bs-toggle="modal" data-bs-target="#modalAjuda">
+                    Ajuda 💡
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modalAjuda" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Como funciona a calculadora?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <h6>Calculadora ACG</h6>
+                                <p>
+                                    Insira a categoria da atividade realizada (ensino, pesquisa, extensão ou cultural) 
+                                    e a carga horária correspondente.  
+                                    Lembre que certificados usados nas ACEEs não podem ser usados na Extensão.
+                                </p>
+
+                                <p>Documento oficial das ACGs:</p>
+                                <a href="https://cursos.unipampa.edu.br/cursos/medicina/files/2024/08/comissao-interna-de-avaliacao-de-acgs-curso-de-medicina-r7-docx--02-07.pdf">
+                                    Acessar Documento
+                                </a>
+
+                                <h6 class="mt-3">Calculadora ACEE</h6>
+                                <p>
+                                    Informe as horas de OACEE e Atividades de Extensão.  
+                                    O programa irá verificar se você atingiu o mínimo exigido.
+                                </p>
+
+                                <p><strong>Dica:</strong> participação como ouvinte conta APENAS META da carga horária.</p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">
+                                    Entendi!
+                                </button>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+
+                <!-- FORM ACG -->
+                <form id="acg-form">
+                    <h4>Calculadora ACG</h4>
+
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" class="form-select mb-3">
+                        <option value="ensino">Ensino</option>
+                        <option value="pesquisa">Pesquisa</option>
+                        <option value="extensao">Extensão</option>
+                        <option value="cultural">Cultural</option>
+                    </select>
+
+                    <label for="carga">Carga Horária</label>
+                    <input type="number" id="carga" min="1" class="form-control mb-3">
+
+                    <button type="button" class="btn btn-custom w-100" onclick="adicionarAtividade()">
+                        Adicionar Atividade
+                    </button>
+
+                    <div class="mt-3">
+                        <button class="btn btn-danger btn-inline" type="button" onclick="limparACG()">Limpar Tudo</button>
+                        <button class="btn btn-danger btn-inline" type="button" onclick="limparUltimaAtividade()">Limpar Última</button>
+                    </div>
+                </form>
+
+                <div id="resultado" class="result mt-3">
+                    Nenhuma atividade adicionada ainda 💔
+                </div>
+
+                <!-- FORM ACEE -->
+                <form id="acee-form" class="mt-4">
+                    <h4>Calculadora ACEE</h4>
+
+                    <label for="oacee">Horas OACEE</label>
+                    <input type="number" id="oacee" min="0" class="form-control mb-3" value="0">
+
+                    <label for="unipampa">Horas Atividades de Extensão</label>
+                    <input type="number" id="unipampa" min="0" class="form-control mb-3" value="0">
+
+                    <button type="button" class="btn btn-custom w-100" onclick="calcularACEE()">
+                        Calcular ACEE
+                    </button>
+
+                    <div class="mt-3">
+                        <button class="btn btn-danger btn-inline" type="button" onclick="limparACEE()">Limpar Tudo</button>
+                        <button class="btn btn-danger btn-inline" type="button" onclick="limparUltimaACEE()">Limpar Última</button>
+                    </div>
+                </form>
+
+                <div id="resultado-acee" class="result mt-3">
+                    Nenhuma hora de ACEE adicionada ainda 💔
+                </div>
+
+            </div> <!-- FIM ACG -->
+        <!-- ABA PROCESSOS BIOLÓGICOS I, II, III -->
+        <div id="aba-pb" style="display:none;">
+
+            <h1>Processos Biológicos 💗</h1>
+            <h4>PB I • PB II • PB III</h4>
+
+            <label for="cog1">Cognitiva I</label>
+            <input type="number" id="cog1" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="cog2">Cognitiva II</label>
+            <input type="number" id="cog2" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="anat1">Anatomia I</label>
+            <input type="number" id="anat1" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="anat2">Anatomia II</label>
+            <input type="number" id="anat2" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="ibc">IBC</label>
+            <input type="number" id="ibc" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="histo1">Histo I</label>
+            <input type="number" id="histo1" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="histo2">Histo II</label>
+            <input type="number" id="histo2" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="formativa">Formativa</label>
+            <input type="number" id="formativa" class="form-control mb-3" min="0" max="10" value="0">
+
+            <button type="button" class="btn btn-custom w-100" onclick="calcularPB()">
+                Calcular Nota
+            </button>
+
+            <div id="resultado-pb" class="result mt-3">
+                Nenhuma nota inserida ainda 💔
             </div>
+
+        </div> <!-- FIM ABA PB -->
+        <!-- CONTAINER PB IV -->
+        <div class="container-box" id="pb4-container" style="display:none;">
+
+            <h1>Processos Biológicos IV 💗</h1>
+
+            <label for="cog1_4">Cognitiva I</label>
+            <input type="number" id="cog1_4" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="cog2_4">Cognitiva II</label>
+            <input type="number" id="cog2_4" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="formativa_4">Formativa</label>
+            <input type="number" id="formativa_4" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="micro1_4">Microbiologia I</label>
+            <input type="number" id="micro1_4" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="micro2_4">Microbiologia II</label>
+            <input type="number" id="micro2_4" class="form-control mb-2" min="0" max="10" value="0">
+
+            <label for="pato_4">Patologia</label>
+            <input type="number" id="pato_4" class="form-control mb-3" min="0" max="10" value="0">
+
+            <button type="button" class="btn btn-custom w-100" onclick="calcularPB4()">Calcular Nota</button>
+
+            <div id="resultado-pb4" class="result mt-3">
+                Nenhuma nota inserida ainda 💔
+            </div>
+
         </div>
-        <!-- Calculadora ACG -->
-        <form id="acg-form">
-            <h4>Calculadora ACG</h4>
-            <label for="categoria">Categoria</label>
-            <select id="categoria" class="form-select mb-3" required>
-                <option value="ensino">Ensino</option>
-                <option value="pesquisa">Pesquisa</option>
-                <option value="extensao">Extensão</option>
-                <option value="cultural">Cultural</option>
-            </select>
-            <label for="carga">Carga Horária (em horas)</label>
-            <input type="number" id="carga" class="form-control mb-3" min="1" required>
-            <button type="button" class="btn btn-custom w-100" onclick="adicionarAtividade()">Adicionar Atividade</button>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-            <div class="mt-3">
-                <button type="button" class="btn btn-danger btn-inline" onclick="limparACG()">Limpar Tudo</button>
-                    <button type="button" class="btn btn-danger btn-inline" onclick="limparUltimaAtividade()">Limpar Última</button>
-            </div>
+        <script>
 
-        </form>
-        <div id="resultado" class="result mt-3">Nenhuma atividade adicionada ainda. 💔</div>
-        <!-- Calculadora ACEE -->
-        <form id="acee-form" class="mt-4">
-            <h4>Calculadora ACEE</h4>
-            <label for="oacee">Horas de OACEE</label>
-            <input type="number" id="oacee" class="form-control mb-3" min="0" value="0">
-            <label for="unipampa">Horas de UNIPAMPA Cidadã</label>
-            <input type="number" id="unipampa" class="form-control mb-3" min="0" value="0">
-            <button type="button" class="btn btn-custom w-100" onclick="calcularACEE()">Calcular ACEE</button>
-            
-            <div class="mt-3">
-                <button type="button" class="btn btn-danger btn-inline" onclick="limparACEE()">Limpar Tudo</button>
-                <button type="button" class="btn btn-danger btn-inline" onclick="limparUltimaACEE()">Limpar Última</button>
-            </div>
+            /* ------------------------------------
+               LOCAL STORAGE E INICIALIZAÇÃO
+            --------------------------------------*/
+            let atividades = JSON.parse(localStorage.getItem('atividades')) || [];
+            let aceeData = JSON.parse(localStorage.getItem('aceeData')) || { oacee: 0, unipampa: 0 };
+            let aceeHistorico = [];
 
-        </form>
-        <div id="resultado-acee" class="result mt-3">Nenhuma hora de ACEE adicionada ainda. 💔</div>
-    </div>
-    <div class="cookie-banner" id="cookie-banner">
-        <p><strong>Atenção:</strong> As horas de participação em evento como ouvinte devem ser divididas por 2.</p>
-        <button class="btn-cookie" id="btn-entendi">Entendi</button>
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Variáveis para armazenar dados
-        let atividades = JSON.parse(localStorage.getItem('atividades')) || [];
-        let aceeData = JSON.parse(localStorage.getItem('aceeData')) || { oacee: 0, unipampa: 0 };
-        let aceeHistorico = []; // Histórico das alterações realizadas na calculadora ACEE
-
-        // Atualizar resumo ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            atualizarResumo();
-            atualizarResumoACEE();
-        });
-
-        // Função para adicionar uma atividade
-        function adicionarAtividade() {
-            const categoria = document.getElementById('categoria').value;
-            const carga = parseInt(document.getElementById('carga').value);
-
-            if (!carga || carga <= 0) {
-                alert('Por favor, insira uma carga horária válida.');
-                return;
-            }
-
-            const totalAtual = atividades.reduce(
-                (acc, atividade) => (atividade.categoria === categoria ? acc + atividade.carga : acc),
-                0
-            );
-            const cargaFinal = Math.min(95, totalAtual + carga);
-
-            if (cargaFinal > totalAtual) {
-                atividades.push({ categoria, carga: cargaFinal - totalAtual });
-                localStorage.setItem('atividades', JSON.stringify(atividades)); // Salvar no Local Storage
-            } else {
-                alert(`A carga horária máxima de 95 horas já foi atingida para a categoria ${categoria}.`);
-            }
-            atualizarResumo();
-        }
-
-        // Função para atualizar o resumo geral de atividades
-        function atualizarResumo() {
-            let resumo = '';
-            const totalPorCategoria = { ensino: 0, pesquisa: 0, extensao: 0, cultural: 0 };
-            let totalGeral = 0;
-
-            atividades.forEach(atividade => {
-                totalPorCategoria[atividade.categoria] += atividade.carga;
-                totalGeral += atividade.carga;
+            document.addEventListener('DOMContentLoaded', () => {
+                atualizarResumo();
+                atualizarResumoACEE();
             });
 
-            resumo += `<p>Total Geral: <strong>${totalGeral}</strong> horas</p>`;
-            resumo += '<ul>';
-            Object.keys(totalPorCategoria).forEach(cat => {
-                const categoriaNome = cat.charAt(0).toUpperCase() + cat.slice(1);
-                const totalCategoria = totalPorCategoria[cat];
-                resumo += `<li>${categoriaNome}: ${totalCategoria} horas`;
-                if (totalCategoria < 20) {
-                    resumo += ` <span class="text-danger">(Faltam ${20 - totalCategoria} horas para o mínimo.)</span>`;
+            /* ------------------------------------
+               ACG — ADICIONAR ATIVIDADES
+            --------------------------------------*/
+            function adicionarAtividade() {
+                const categoria = document.getElementById('categoria').value;
+                const carga = parseInt(document.getElementById('carga').value);
+
+                if (!carga || carga <= 0) {
+                    alert("Insira uma carga horária válida.");
+                    return;
                 }
-                resumo += '</li>';
-            });
-            resumo += '</ul>';
 
-            if (totalGeral >= 135 && Object.values(totalPorCategoria).every(cat => cat >= 20)) {
-                resumo += '<p class="text-success">🎉 Parabéns! Você atingiu a carga horária necessária. 💃</p>';
-            } else {
-                resumo += `<p class="text-danger">💔 Você ainda precisa de ${
-                    Math.max(135 - totalGeral, ...Object.values(totalPorCategoria).map(cat => (cat < 20 ? 20 - cat : 0)))
-                } horas no total ou em categorias específicas.</p>`;
-            }
+                const totalAtual = atividades
+                    .filter(a => a.categoria === categoria)
+                    .reduce((acc, a) => acc + a.carga, 0);
 
-            document.getElementById('resultado').innerHTML = resumo;
-        }
+                const cargaFinal = Math.min(95, totalAtual + carga);
 
-        // Função para calcular ACEE
-        function calcularACEE() {
-            // Salvar o estado atual no histórico antes de alterar
-            aceeHistorico.push({ ...aceeData });
-
-            // Pega os valores inseridos
-            const oacee = parseInt(document.getElementById('oacee').value) || 0;
-            const unipampa = parseInt(document.getElementById('unipampa').value) || 0;
-
-            // Soma as horas ao invés de substituir
-            aceeData.oacee += oacee;
-            aceeData.unipampa += unipampa;
-
-            // Atualiza os dados no Local Storage
-            localStorage.setItem('aceeData', JSON.stringify(aceeData));
-
-            // Atualiza o resumo da ACEE
-            atualizarResumoACEE();
-
-            // Limpa os campos de entrada após o cálculo
-            document.getElementById('oacee').value = "";
-            document.getElementById('unipampa').value = "";
-        }
-
-        // Função para atualizar o resumo da ACEE
-        function atualizarResumoACEE() {
-            const { oacee, unipampa } = aceeData;
-            const minOacee = 60;
-            const minUnipampa = 65;
-
-            let resultado = `<p>Total OACEE: ${oacee} horas</p>`;
-            resultado += `<p>Total UNIPAMPA Cidadã: ${unipampa} horas</p>`;
-
-            if (oacee >= minOacee && unipampa >= minUnipampa) {
-                resultado += '<p class="text-success">🎉 Parabéns! Você atingiu os requisitos de ACEE.</p>';
-            } else {
-                if (oacee < minOacee) {
-                    resultado += `<p class="text-danger">💔 Faltam ${minOacee - oacee} horas para OACEE.</p>`;
+                if (cargaFinal > totalAtual) {
+                    atividades.push({ categoria, carga: cargaFinal - totalAtual });
+                    localStorage.setItem("atividades", JSON.stringify(atividades));
+                } else {
+                    alert(`Limite de 95h atingido para ${categoria}.`);
                 }
-                if (unipampa < minUnipampa) {
-                    resultado += `<p class="text-danger">💔 Faltam ${minUnipampa - unipampa} horas para UNIPAMPA Cidadã.</p>`;
-                }
-            }
 
-            document.getElementById('resultado-acee').innerHTML = resultado;
-        }
-
-        // Função para limpar as atividades gerais
-        function limparACG() {
-            if (confirm('Tem certeza de que deseja limpar todas as atividades?')) {
-                atividades = [];
-                localStorage.removeItem('atividades'); // Remover do Local Storage
                 atualizarResumo();
             }
-        }
 
-        // Função para limpar os dados de ACEE
-        function limparACEE() {
-            if (confirm('Tem certeza de que deseja limpar os dados de ACEE?')) {
-                aceeData = { oacee: 0, unipampa: 0 };
-                localStorage.removeItem('aceeData'); // Remover do Local Storage
+            /* ------------------------------------
+               ACG — RESUMO
+            --------------------------------------*/
+            function atualizarResumo() {
+                const totalPorCategoria = { ensino: 0, pesquisa: 0, extensao: 0, cultural: 0 };
+                let totalGeral = 0;
+
+                atividades.forEach(a => {
+                    totalPorCategoria[a.categoria] += a.carga;
+                    totalGeral += a.carga;
+                });
+
+                let resumo = `<p>Total Geral: <strong>${totalGeral}</strong> horas</p><ul>`;
+
+                for (let cat in totalPorCategoria) {
+                    const nome = cat.charAt(0).toUpperCase() + cat.slice(1);
+                    const total = totalPorCategoria[cat];
+
+                    resumo += `<li>${nome}: ${total} horas`;
+
+                    if (cat !== "extensao" && total < 20) {
+                        resumo += ` <span class="text-danger">(Faltam ${20 - total}h)</span>`;
+                    }
+
+                    resumo += `</li>`;
+                }
+
+                resumo += `</ul>`;
+
+                const faltaGeral = Math.max(
+                    135 - totalGeral,
+                    ...Object.values(totalPorCategoria).map(v => v < 20 ? 20 - v : 0)
+                );
+
+                if (
+                    totalGeral >= 135 &&
+                    totalPorCategoria.ensino >= 20 &&
+                    totalPorCategoria.pesquisa >= 20 &&
+                    totalPorCategoria.cultural >= 20
+                ) {
+                    resumo += `<p class="text-success">🎉 Parabéns! Você concluiu as ACGs.</p>`;
+                } else {
+                    resumo += `<p class="text-danger">💔 Você ainda precisa de ${faltaGeral}h no total ou em categorias específicas.</p>`;
+                }
+
+                document.getElementById("resultado").innerHTML = resumo;
+            }
+
+            /* ------------------------------------
+               ACEE — CÁLCULO
+            --------------------------------------*/
+            function calcularACEE() {
+                aceeHistorico.push({ ...aceeData });
+
+                const oacee = parseInt(document.getElementById("oacee").value) || 0;
+                const unipampa = parseInt(document.getElementById("unipampa").value) || 0;
+
+                aceeData.oacee += oacee;
+                aceeData.unipampa += unipampa;
+
+                localStorage.setItem("aceeData", JSON.stringify(aceeData));
+
+                document.getElementById("oacee").value = "";
+                document.getElementById("unipampa").value = "";
+
                 atualizarResumoACEE();
             }
-        }
 
-        // Função para limpar a última alteração feita em ACEE
-        function limparUltimaACEE() {
-            if (aceeHistorico.length > 0) {
-                const ultimoEstado = aceeHistorico.pop();
-                aceeData = ultimoEstado;
-                localStorage.setItem('aceeData', JSON.stringify(aceeData));
-                atualizarResumoACEE();
-            } else {
-                alert("Não há informações anteriores para restaurar.");
+            function atualizarResumoACEE() {
+                const { oacee, unipampa } = aceeData;
+
+                const MIN_OACEE = 60;
+                const MIN_EXT = 65;
+
+                let html = `
+                    <p>Total OACEE: ${oacee}h</p>
+                    <p>Total Atividades de Extensão: ${unipampa}h</p>
+                `;
+
+                if (oacee >= MIN_OACEE && unipampa >= MIN_EXT) {
+                    html += `<p class="text-success">🎉 Parabéns! Requisitos de ACEE concluídos!</p>`;
+                } else {
+                    if (oacee < MIN_OACEE)
+                        html += `<p class="text-danger">Faltam ${MIN_OACEE - oacee}h para OACEE.</p>`;
+                    if (unipampa < MIN_EXT)
+                        html += `<p class="text-danger">Faltam ${MIN_EXT - unipampa}h para Atividades de Extensão.</p>`;
+                }
+
+                document.getElementById("resultado-acee").innerHTML = html;
             }
-        }
 
-        // Função para limpar a última atividade adicionada
-        function limparUltimaAtividade() {
-            if (atividades.length > 0) {
-                atividades.pop();
-                localStorage.setItem('atividades', JSON.stringify(atividades));
-                atualizarResumo();
-            } else {
-                alert("Não há atividades para remover.");
+            /* ------------------------------------
+               ACEE LIMPAR
+            --------------------------------------*/
+            function limparACEE() {
+                if (confirm("Deseja realmente apagar todos os dados de ACEE?")) {
+                    aceeData = { oacee: 0, unipampa: 0 };
+                    aceeHistorico = [];
+                    localStorage.removeItem("aceeData");
+                    atualizarResumoACEE();
+                }
             }
-        }
 
-        // Esconder o banner de cookies
-        document.getElementById('btn-entendi').addEventListener('click', () => {
-            const banner = document.getElementById('cookie-banner');
-            banner.style.display = 'none';
-        });
-    </script>
-</body>
-</html>
+            function limparUltimaACEE() {
+                if (aceeHistorico.length > 0) {
+                    aceeData = aceeHistorico.pop();
+                    localStorage.setItem("aceeData", JSON.stringify(aceeData));
+                    atualizarResumoACEE();
+                } else {
+                    alert("Nenhum passo anterior disponível.");
+                }
+            }
+
+            /* ------------------------------------
+               TROCA ENTRE ABAS
+            --------------------------------------*/
+            function mostrarACG() {
+                document.getElementById("aba-acg").style.display = "block";
+                document.getElementById("aba-pb").style.display = "none";
+                document.getElementById("pb4-container").style.display = "none";
+            }
+
+            function mostrarPB() {
+                document.getElementById("aba-acg").style.display = "none";
+                document.getElementById("aba-pb").style.display = "block";
+                document.getElementById("pb4-container").style.display = "none";
+            }
+
+            function mostrarPB4() {
+                document.getElementById("aba-acg").style.display = "none";
+                document.getElementById("aba-pb").style.display = "none";
+                document.getElementById("pb4-container").style.display = "block";
+            }
+
+            /* ------------------------------------
+               CÁLCULO PB I - II - III
+            --------------------------------------*/
+            function calcularPB() {
+                const n1 = parseFloat(document.getElementById("cog1").value) || 0;
+                const n2 = parseFloat(document.getElementById("cog2").value) || 0;
+                const a1 = parseFloat(document.getElementById("anat1").value) || 0;
+                const a2 = parseFloat(document.getElementById("anat2").value) || 0;
+                const ibc = parseFloat(document.getElementById("ibc").value) || 0;
+                const h1 = parseFloat(document.getElementById("histo1").value) || 0;
+                const h2 = parseFloat(document.getElementById("histo2").value) || 0;
+                const form = parseFloat(document.getElementById("formativa").value) || 0;
+
+                const somaPonderada =
+                    n1 * 2.4 +
+                    n2 * 2.4 +
+                    a1 * 1.0 +
+                    a2 * 1.0 +
+                    ibc * 1.5 +
+                    h1 * 0.25 +
+                    h2 * 0.25 +
+                    form * 1.2;
+
+                const notaFinal = somaPonderada / 10;
+
+                const div = document.getElementById("resultado-pb");
+                let mensagem = "";
+                let classe = "";
+
+                if (notaFinal >= 6) {
+                    mensagem = `🎉 Parabéns! Você passou! Nota final: <strong>${notaFinal.toFixed(2)}</strong>`;
+                    classe = "pb-result-pass";
+                } else {
+                    const falta = (6 - notaFinal).toFixed(2);
+                    mensagem = `💔 Você não atingiu a média. Faltam <strong>${falta}</strong> pontos.`;
+                    classe = "pb-result-fail";
+                }
+
+                div.className = `result mt-3 ${classe}`;
+                div.innerHTML = mensagem;
+
+                setTimeout(() => div.classList.add("fade-in"), 50);
+            }
+
+            /* ------------------------------------
+               CÁLCULO PB IV
+            --------------------------------------*/
+            function calcularPB4() {
+                const n1 = parseFloat(document.getElementById('cog1_4').value) || 0;
+                const n2 = parseFloat(document.getElementById('cog2_4').value) || 0;
+                const form = parseFloat(document.getElementById('formativa_4').value) || 0;
+                const m1 = parseFloat(document.getElementById('micro1_4').value) || 0;
+                const m2 = parseFloat(document.getElementById('micro2_4').value) || 0;
+                const pat = parseFloat(document.getElementById('pato_4').value) || 0;
+
+                const somaPonderada =
+                    n1 * 2.8 +
+                    n2 * 2.8 +
+                    form * 1.4 +
+                    m1 * 0.75 +
+                    m2 * 0.75 +
+                    pat * 1.5;
+
+                const notaFinal = somaPonderada / 10;
+
+                const div = document.getElementById('resultado-pb4');
+
+                if (notaFinal >= 6) {
+                    div.className = "pb-result-pass fade-in";
+                    div.innerHTML = `🎉 Parabéns! Você passou! Nota final: ${notaFinal.toFixed(2)}`;
+                } else {
+                    const falta = (6 - notaFinal).toFixed(2);
+                    div.className = "pb-result-fail fade-in";
+                    div.innerHTML = `💔 Você não atingiu a média. Faltam ${falta} pontos.`;
+                }
+            }
+
+        </script>
