@@ -140,7 +140,7 @@
 
                                 <h6 class="mt-3">Calculadora ACEE</h6>
                                 <p>
-                                    Informe as horas de OACEE e Atividades de Extensão.  
+                                    Informe as horas de Unipampa Cidadã e Atividades de Extensão.  
                                     O programa irá verificar se você atingiu o mínimo exigido.
                                 </p>
 
@@ -190,7 +190,7 @@
                 <form id="acee-form" class="mt-4">
                     <h4>Calculadora ACEE</h4>
 
-                    <label for="oacee">Horas OACEE</label>
+                    <label for="oacee">Horas Unipampa Cidadã</label>
                     <input type="number" id="oacee" min="0" class="form-control mb-3" value="0">
 
                     <label for="unipampa">Horas Atividades de Extensão</label>
@@ -395,8 +395,8 @@
             function atualizarResumoACEE() {
                 const { oacee, unipampa } = aceeData;
 
-                const MIN_OACEE = 60;
-                const MIN_EXT = 65;
+                const MIN_OACEE = 65;
+                const MIN_EXT = 60;
 
                 let html = `
                     <p>Total OACEE: ${oacee}h</p>
